@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const peliculaSchema = new mongoose.Schema({
+const movieSchema = new mongoose.Schema({
   adult: Boolean,
   backdrop_path: String,
   genre_ids: [Number],
@@ -17,6 +17,6 @@ const peliculaSchema = new mongoose.Schema({
   vote_count: Number,
 });
 
-const Pelicula = mongoose.model("Pelicula", peliculaSchema);
+module.exports = mongoose.model("Movie", movieSchema);
 
-module.exports = Pelicula;
+
