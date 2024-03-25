@@ -2,15 +2,15 @@ const asyncHandler = require("express-async-handler");
 const Movie = require("../../models/moviesModel");
 
 const getMovies = asyncHandler(async (req, res) => {
-  const movies = await Movie.find();
-  res.status(200).json({ movies });
+  const movies = await Movie.find({});
+  res.status(200).json(movies);
 });
 
 const createMovie = asyncHandler(async (req, res) => {
   const movieData = {
     adult: req.body.adult,
     backdrop_path: req.body.backdrop_path,
-    genre_ids: req.body.genre_ids, // Array of numbers
+    genres: req.body.genre_ids, // Array of strings
     original_language: req.body.original_language,
     original_title: req.body.original_title,
     overview: req.body.overview,
@@ -25,8 +25,28 @@ const createMovie = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Please Fill all the fields");
   }
+  // verify if the movie already exists
+  const movieExists = await Movie.findOne({ title: movieData.title });
+  if (movieExists) {
+    res.status(400);
+    throw new Error("Movie already exists");
+  }
   const movie = await Movie.create(movieData);
-  res.status(201).json({ movie });
+  if(movie){
+    res.status(201).json(movie);
+  }else{
+    res.status(400);
+    throw new Error("An error occurred while creating the movie. Please try again.");
+  }
+});
+
+const getMovieById = asyncHandler(async (req, res) => {
+  const movie = await Movie.findById(req.params.id);
+  if (!movie) {
+    res.status(404);
+    throw new Error("Movie not found");
+  }
+  res.status(200).json(movie);
 });
 
 const deleteMovie = asyncHandler(async (req, res) => {
@@ -38,6 +58,37 @@ const deleteMovie = asyncHandler(async (req, res) => {
   await Movie.deleteOne(movie);
   res.status(200).json({ if: req.params.id, message: "Movie removed" });
 });
+
+// update movie likes
+const updateMovieLikes = asyncHandler(async (req, res) => {
+  const movie = await Movie.findById(req.params.id);
+  const likeUpdate ={
+    likes: 1 + parseFloat(movie.likes),
+    vote_count: 1 + parseFloat(movie.vote_count)
+  }
+  const updateAverage = {
+    likes: parseFloat(likeUpdate.likes),
+    vote_count: parseFloat(likeUpdate.vote_count),
+    vote_average: parseFloat(likeUpdate.likes) / parseFloat(likeUpdate.vote_count) * 100,
+  }
+
+  if (!movie) {
+    res.status(404);
+    throw new Error("Movie not found");
+  } else {
+    const movieUpdated = await Movie.findByIdAndUpdate(
+      req.params.id,
+      updateAverage,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json(movieUpdated);
+  }
+});
+
+
 
 const updateVotes = asyncHandler(async (req, res) => {
   const { vote } = req.body;
@@ -63,6 +114,7 @@ const updateVotes = asyncHandler(async (req, res) => {
 
 module.exports = {
   getMovies,
+  getMovieById,
   createMovie,
   deleteMovie,
   updateVotes,

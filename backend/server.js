@@ -26,8 +26,6 @@ app.use(errorHandler);
 
 async function serverStart() {
   try {
-    // Llama a la función para cargar películas
-    // await loadMovies();
 
     // Inicia el servidor
     app.listen(port, () =>
