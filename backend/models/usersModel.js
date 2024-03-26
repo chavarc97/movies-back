@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema(
   {
-    first_name: {
+    name: {
       type: String,
       required: [true, "Please provide your first name"],
       maxlength: [50, "Your first name cannot exceed 50 characters"],
