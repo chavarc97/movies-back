@@ -3,7 +3,6 @@ const colors = require("colors");
 const dotenv = require("dotenv").config();
 const connectDB = require("./config/db");
 const cors = require("cors");
-const { loadMovies } = require("./populate/loadMovies");
 const { errorHandler } = require("./middleware/errorHandler");
 const port = process.env.PORT || 5000;
 
@@ -26,7 +25,6 @@ app.use(errorHandler);
 
 async function serverStart() {
   try {
-
     // Inicia el servidor
     app.listen(port, () =>
       console.log(`Servidor iniciado en el puerto ${port}`)
