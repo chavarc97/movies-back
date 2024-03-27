@@ -10,7 +10,7 @@ const {
 const { protect } = require("../middleware/authMiddleware");
 
 router.get("/", getMovies);
-router.get("/:id", protect, getMovieById);
+router.get("/:id", getMovieById);
 router.post("/", protect, createMovie);
 router.delete("/:id", protect, deleteMovie);
 router.put("/:id", protect, updateVotes);
